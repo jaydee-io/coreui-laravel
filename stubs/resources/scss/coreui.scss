@@ -1,0 +1,75 @@
+/**
+ * Import all CoreUI SASS files
+ */
+@import "~coreui/scss/mixins/banner";
+@include bsBanner("");
+
+// Configuration
+@import "~coreui/scss/functions";
+
+// User defined default variable overrides
+@import "coreui-default-variables";
+
+@import "~coreui/scss/variables";
+@import "~coreui/scss/variables-dark";
+
+// User defined default map overrides
+@import "coreui-default-maps";
+
+@import "~coreui/scss/maps";
+@import "~coreui/scss/mixins";
+@import "~coreui/scss/utilities";
+
+// User defined map overrides
+@import "coreui-custom-maps";
+
+// Layout & components
+@import "~coreui/scss/root";
+@import "~coreui/scss/reboot";
+@import "~coreui/scss/type";
+@import "~coreui/scss/images";
+@import "~coreui/scss/containers";
+@import "~coreui/scss/grid";
+@import "~coreui/scss/tables";
+@import "~coreui/scss/forms";
+@import "~coreui/scss/buttons";
+@import "~coreui/scss/loading-button";
+@import "~coreui/scss/transitions";
+@import "~coreui/scss/dropdown";
+@import "~coreui/scss/button-group";
+@import "~coreui/scss/nav";
+@import "~coreui/scss/navbar";
+@import "~coreui/scss/card";
+@import "~coreui/scss/accordion";
+@import "~coreui/scss/breadcrumb";
+@import "~coreui/scss/pagination";
+@import "~coreui/scss/badge";
+@import "~coreui/scss/alert";
+@import "~coreui/scss/progress";
+@import "~coreui/scss/list-group";
+@import "~coreui/scss/close";
+@import "~coreui/scss/toasts";
+@import "~coreui/scss/modal";
+@import "~coreui/scss/tooltip";
+@import "~coreui/scss/popover";
+@import "~coreui/scss/carousel";
+@import "~coreui/scss/spinners";
+@import "~coreui/scss/offcanvas";
+@import "~coreui/scss/placeholders";
+
+@import "~coreui/scss/avatar";
+@import "~coreui/scss/calendar";
+@import "~coreui/scss/callout";
+@import "~coreui/scss/date-picker";
+@import "~coreui/scss/time-picker";
+@import "~coreui/scss/footer";
+@import "~coreui/scss/header";
+@import "~coreui/scss/icon";
+@import "~coreui/scss/sidebar";
+
+// Helpers
+@import "~coreui/scss/helpers";
+
+// Utilities
+@import "~coreui/scss/utilities/api";
+@import "~coreui/scss/utilities/bg-gradients";
