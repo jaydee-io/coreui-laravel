@@ -5,6 +5,7 @@ namespace JayDeeIO\CoreuiLaravel\Console;
 use RuntimeException;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -122,17 +123,17 @@ class InstallCommand extends Command
     protected function installInertiaStack()
     {
         // Install Inertia...
-        if (! $this->requireComposerPackages('inertiajs/inertia-laravel:^0.6.8', 'tightenco/ziggy:^1.0')) {
+        if (! $this->requireComposerPackages('inertiajs/inertia-laravel', 'tightenco/ziggy')) {
             return false;
         }
 
         // Install NPM Development packages...
         $this->updateNodePackages(function ($packages) {
             return [
-                '@inertiajs/vue3' => '^1.0.0',
-                '@vitejs/plugin-vue' => '^4.5.0',
-                'vue' => '^3.2.31',
-                'sass' => '^1.71.1',
+                '@inertiajs/vue3' => '*',
+                '@vitejs/plugin-vue' => '*',
+                'vue' => '*',
+                'sass' => '*',
             ] + $packages;
         }, true);
 
@@ -140,11 +141,11 @@ class InstallCommand extends Command
         $devSuffix = $this->option('pro') ? "-pro" : "";
         $this->updateNodePackages(function ($packages) use ($devSuffix) {
             return [
-                '@coreui/coreui'.$devSuffix => '^5.0.0-rc.1',
-                '@coreui/vue'.$devSuffix => '^5.0.0-rc.1',
-                '@coreui/icons' => '^3.0.1',
-                '@coreui/icons-vue' => '^2.0.0',
-                '@coreui/vue-chartjs' => '^3.0.0-rc.0',
+                '@coreui/coreui'.$devSuffix => '*',
+                '@coreui/vue'.$devSuffix => '*',
+                '@coreui/icons' => '*',
+                '@coreui/icons-vue' => '*',
+                '@coreui/vue-chartjs' => '*',
             ] + $packages;
         }, false);
 
@@ -155,8 +156,10 @@ class InstallCommand extends Command
                 $this->output->write($output);
             });
 
-        $this->installMiddlewareAfter('SubstituteBindings::class', '\App\Http\Middleware\HandleInertiaRequests::class');
-        $this->installMiddlewareAfter('\App\Http\Middleware\HandleInertiaRequests::class', '\Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class');
+        $this->installMiddleware([
+            '\App\Http\Middleware\HandleInertiaRequests::class',
+            '\Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class',
+        ]);
 
         if (file_exists(base_path('pnpm-lock.yaml'))) {
             $this->runCommands(['pnpm install']);
@@ -170,33 +173,34 @@ class InstallCommand extends Command
     }
 
     /**
-     * Install the middleware to a group in the application Http Kernel.
+     * Install the given middleware names into the application.
      *
-     * @param  string  $after
-     * @param  string  $name
+     * @param  array|string  $name
      * @param  string  $group
+     * @param  string  $modifier
      * @return void
      */
-    protected function installMiddlewareAfter($after, $name, $group = 'web')
+    protected function installMiddleware($names, $group = 'web', $modifier = 'append')
     {
-        $httpKernel = file_get_contents(app_path('Http/Kernel.php'));
+        $bootstrapApp = file_get_contents(base_path('bootstrap/app.php'));
 
-        $middlewareGroups = Str::before(Str::after($httpKernel, '$middlewareGroups = ['), '];');
-        $middlewareGroup = Str::before(Str::after($middlewareGroups, "'$group' => ["), '],');
+        $names = collect(Arr::wrap($names))
+            ->filter(fn ($name) => ! Str::contains($bootstrapApp, $name))
+            ->whenNotEmpty(function ($names) use ($bootstrapApp, $group, $modifier) {
+                $names = $names->map(fn ($name) => "$name")->implode(','.PHP_EOL.'            ');
 
-        if (! Str::contains($middlewareGroup, $name)) {
-            $modifiedMiddlewareGroup = str_replace(
-                $after.',',
-                $after.','.PHP_EOL.'            '.$name.',',
-                $middlewareGroup,
-            );
+                $bootstrapApp = str_replace(
+                    '->withMiddleware(function (Middleware $middleware) {',
+                    '->withMiddleware(function (Middleware $middleware) {'
+                        .PHP_EOL."        \$middleware->$group($modifier: ["
+                        .PHP_EOL."            $names,"
+                        .PHP_EOL.'        ]);'
+                        .PHP_EOL,
+                    $bootstrapApp,
+                );
 
-            file_put_contents(app_path('Http/Kernel.php'), str_replace(
-                $middlewareGroups,
-                str_replace($middlewareGroup, $modifiedMiddlewareGroup, $middlewareGroups),
-                $httpKernel
-            ));
-        }
+                file_put_contents(base_path('bootstrap/app.php'), $bootstrapApp);
+            });
     }
 
     /**
