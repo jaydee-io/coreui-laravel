@@ -4,8 +4,7 @@ import '../scss/app.scss';
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
-import CoreuiVue from '@coreui/vue-pro';
+import { ZiggyVue } from 'ziggy-js';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -16,7 +15,6 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(CoreuiVue)
             .provide('icons', null) // Fix issue https://github.com/coreui/coreui-icons-vue/issues/40
             .mount(el);
     },

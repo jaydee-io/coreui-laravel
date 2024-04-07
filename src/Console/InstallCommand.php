@@ -60,26 +60,6 @@ class InstallCommand extends Command
             resource_path('views/welcome.blade.php'),
         ]);
 
-        // Patches
-        $this->replaceInFile(
-            "return view('welcome');",
-            "return Inertia::render('Welcome', [" . PHP_EOL .
-            "        'canLogin' => Route::has('login')," . PHP_EOL .
-            "        'canRegister' => Route::has('register')," . PHP_EOL .
-            "        'laravelVersion' => Application::VERSION," . PHP_EOL .
-            "        'phpVersion' => PHP_VERSION," . PHP_EOL .
-            "    ]);",
-            base_path('routes/web.php')
-        );
-
-        $this->replaceInFile(
-            "use Illuminate\Support\Facades\Route;",
-                "use Illuminate\Foundation\Application;" . PHP_EOL .
-                "use Illuminate\Support\Facades\Route;" . PHP_EOL .
-                "use Inertia\Inertia;",
-            base_path('routes/web.php')
-        );
-
         $this->installInertiaStack();
 
         $this->line('');

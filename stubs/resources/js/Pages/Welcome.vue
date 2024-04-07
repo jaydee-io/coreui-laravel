@@ -1,6 +1,6 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import { CContainer, CCol, CRow, CCard, CCardBody, CButton } from '@coreui/vue-pro';
+import { Head } from '@inertiajs/vue3';
+import { CContainer, CCol, CRow, CCard, CCardBody, CCardTitle, CButton } from '@coreui/vue-pro';
 import { CIcon } from '@coreui/icons-vue';
 import { cibPhp, cibLaravel, cibVueJs, cibCoreui } from '@coreui/icons';
 
